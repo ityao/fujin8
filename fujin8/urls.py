@@ -7,7 +7,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    # url(r'^$', 'fujin8.views.home', name='home'),
+    url(r'^$', 'fujin8.views.home', name='home'),
     # url(r'^fujin8/', include('fujin8.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
