@@ -1,0 +1,62 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">×</button>
+    <h3>请输入邮箱和密码</h3>
+</div>
+<div class="modal-body">
+    {% if form.errors %}
+        <p class="alert alert-error">名字和密码不正确，请重新输入</p>
+    {% endif %}
+    <form class="form-horizontal" id='login_form'>
+        <fieldset>
+            <div class="control-group">
+                <label class="control-label">{{ form.username.label_tag }}</label>
+
+                <div class="controls">
+                    {{ form.username }}
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{{ form.password.label_tag }}</label>
+
+                <div class="controls">
+                    {{ form.password }}
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</div>
+<div class="modal-footer">
+    <a href="#" class="btn" data-dismiss="modal">关闭</a>
+    <a onclick="javascript:login()" class="btn btn-primary">登录</a>
+</div>
+
+<script type="text/javascript">
+    function login() {
+        //var csrf = $("#login_form input[name='csrfmiddlewaretoken']").val();
+        var username = $("#login_form input[name='username']").val();
+        var password = $("#login_form input[name='password']").val();
+        //console.log("csrf: "+csrf+" user: "+username+" pwd: "+ password);
+
+        $.ajax({
+            //data:{csrfmiddlewaretoken:csrf, username:username, password:password},
+            data:{username:username, password:password},
+            dataTypes:'html',
+            success:function (data, textStatus, XMLHttpRequest) {
+                try {
+                    var user = jQuery.parseJSON(data);
+                    $("#userPanel a").first().empty().html('<i class="icon-user"></i>  ' + user['username'] + ' <span class="caret"></span>');
+                    $("#loginPanel").hide();
+                    $("#userPanel").show();
+                    $('#login_modal').modal('hide');
+                    current_user = user;
+                } catch (e) {
+                    $("#login_modal div.modal-body").empty().html(data);
+                }
+
+            },
+            type:'POST',
+            url:'/accounts/login/'
+        })
+
+    }
+</script>

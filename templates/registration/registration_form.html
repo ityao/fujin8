@@ -1,0 +1,59 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">×</button>
+    <h3>注册帐号</h3>
+</div>
+<div class="modal-body">
+    {% if form.errors %}
+        <p class="alert alert-error">登录名或密码错误! 请用英文字母作为登陆用户名</p>
+    {% endif %}
+    <form class="form-horizontal" id='register_form'>
+        <fieldset>
+            {% for field in form %}
+                <div class="control-group">
+                    <label class="control-label">{{ field.label_tag }}</label>
+
+                    <div class="controls">
+                        {{ field }}
+                    </div>
+                </div>
+            {% endfor %}
+        </fieldset>
+    </form>
+</div>
+<div class="modal-footer">
+    <a href="#" class="btn" data-dismiss="modal">关闭</a>
+    <a onclick="register()" class="btn btn-primary">注册</a>
+</div>
+
+<script type="text/javascript">
+    function register() {
+
+        $('#register_modal .btn').attr('disabled', true);
+
+
+        var username = $("#register_form input[name='username']").val();
+        var email = $("#register_form input[name='email']").val();
+        var password1 = $("#register_form input[name='password1']").val();
+        var password2 = $("#register_form input[name='password2']").val();
+
+        $.ajax({
+            data:{username:username, password1:password1, password2:password2, email:email},
+            dataTypes:'html',
+            success:function (data, textStatus, XMLHttpRequest) {
+                try {
+                    //console.log(data);
+                    var result = jQuery.parseJSON(data);
+                    $("#register_modal").empty().html(data);
+                } catch (e) {
+                    $("#register_modal").empty().html(data);
+                }
+                $('#register_modal .btn').attr('disabled', false);
+            },
+            type:'POST',
+            url:'/accounts/register/'
+        })
+
+        $("#register_modal .modal-body").first().empty().html("<div>........提交资料中，请稍候十来秒，帐号确认邮件会发往你的邮箱！</div>");
+
+    }
+</script>

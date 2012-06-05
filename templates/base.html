@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>附近吧 - {% block title %}发掘你身边有趣的事情！{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="附近吧">
+    <meta name="author" content="ityao LTD.">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+        body {
+            padding-top: 60px;
+            padding-bottom: 40px;
+        }
+
+        .sidebar-nav {
+            padding: 9px 0;
+        }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/static/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/static/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/static/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="/static/ico/apple-touch-icon-57-precomposed.png">
+</head>
+<body>
+<header class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </a>
+            <a class="brand" href="#">附近吧&nbsp;&nbsp;&nbsp;</a>
+
+            <div id="userPanel" class="btn-group pull-right hide">
+                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="icon-user"></i> 名字
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="#">个人资料</a></li>
+                    <li class="divider"></li>
+                    <li><a onclick="logout()">退出登录</a></li>
+                </ul>
+            </div>
+            <div id="loginPanel" class="btn-group pull-right">
+                <a class="btn" data-toggle="modal" onclick="showLoginWindow()">
+                    <i class="icon-user"></i> 登录
+                </a>
+                <a class="btn" data-toggle="modal" onclick="showRegisterWindow()">
+                    <i class="icon-pencil"></i> 注册
+                </a>
+            </div>
+            <div class="nav-collapse">
+                <ul class="nav">
+                    <li class="active"><a href="/">首页</a></li>
+                    <li><a href="/about">关于</a></li>
+                    <li><a href="/contact">联系</a></li>
+                </ul>
+            </div>
+            <!--/.nav-collapse -->
+        </div>
+    </div>
+</header>
+<div class="container-fluid">
+    <div class="row-fluid">
+        {% block main_content %}  {% endblock %}
+    </div>
+    <!--/row-->
+    <hr>
+    <footer>
+        <p>&copy; 附近吧 2012</p>
+    </footer>
+</div>
+<!-- Le javascript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="/static/js/jquery-1.7.2.min.js"></script>
+<script src="/static/js/bootstrap-modal.js"></script>
+<script src="/static/js/bootstrap-transition.js"></script>
+<script src="/static/js/bootstrap-dropdown.js"></script>
+<script src="/static/js/bootstrap-collapse.js"></script>
+<!--http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js-->
+<!--
+carefully select the necessary js component for each page
+<script src="/static/js/bootstrap-alert.js"></script>
+<script src="/static/js/bootstrap-dropdown.js"></script>
+<script src="/static/js/bootstrap-scrollspy.js"></script>
+<script src="/static/js/bootstrap-tab.js"></script>
+<script src="/static/js/bootstrap-tooltip.js"></script>
+<script src="/static/js/bootstrap-popover.js"></script>
+<script src="/static/js/bootstrap-button.js"></script>
+<script src="/static/js/bootstrap-collapse.js"></script>
+<script src="/static/js/bootstrap-carousel.js"></script>
+<script src="/static/js/bootstrap-typeahead.js"></script>
+-->
+<script src="/static/js/base.js"></script>
+
+{% block footer_js %}  {% endblock %}
+
+<div class="modal hide fade" id="login_modal"></div>
+
+<div class="modal hide fade" id="register_modal"></div>
+
+<script>
+
+    function logout() {
+        $.ajax({
+            dataTypes:'html',
+            success:function (data, textStatus, XMLHttpRequest) {
+                try {
+                    var result = jQuery.parseJSON(data);
+                    if (result['logout'] == 'success') {
+                        current_user = null;
+                        $("#userPanel").hide();
+                        $("#loginPanel").show();
+                    }
+                } catch (e) {
+                    console.log("退出失败！");
+                }
+            },
+            type:'POST',
+            url:'/accounts/logout/'
+        })
+    }
+
+    function silentLogin() {
+        $.ajax({
+            dataTypes:'html',
+            success:function (data, textStatus, XMLHttpRequest) {
+                try {
+                    var user = jQuery.parseJSON(data);
+                    if (user['login'] == 'false') {
+                        $("#userPanel").hide();
+                        $("#loginPanel").show();
+                        current_user = null;
+                        //判断是否需要弹出登录窗口
+                        if (window.location.hash) {
+                            //alert(window.location.hash)
+                            if (window.location.hash == "#login=require") {
+                                showLoginWindow();
+                            }
+                        } else {
+                            // Fragment doesn't exist
+                        }
+                    } else {
+                        current_user = user;
+                        $("#userPanel a").first().empty().html('<i class="icon-user"></i>  ' + user['username'] + ' <span class="caret"></span>');
+                        $("#loginPanel").hide();
+                        $("#userPanel").show();
+                        $('#login_modal').modal('hide');
+                    }
+                } catch (e) {
+                    console.log("silentLogin: fail!");
+                }
+
+            },
+            type:'POST',
+            url:'/accounts/silentlogin/'
+        })
+
+    }
+
+    function showLoginWindow() {
+        $('#login_modal').on('shown', function () {
+            $("#login_modal input").first().focus();
+        });
+        $('#login_modal').modal();
+        $("#login_modal").load('/accounts/login');
+    }
+    function showRegisterWindow() {
+        $('#register_modal').on('shown', function () {
+            $("#register_modal input").first().focus();
+        });
+        $('#register_modal').modal();
+        $("#register_modal").load('/accounts/register');
+    }
+
+    silentLogin();
+    var current_user = null;
+
+</script>
+
+</body>
+</html>

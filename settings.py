@@ -1,22 +1,25 @@
 # Django settings for fujin8 project.
+import os.path
+
+DIRNAME = os.path.abspath(os.path.dirname(__file__))
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-# ('Your Name', 'your_email@example.com'),
-)
+    ('Silver Lao', 'silver.lao@gmail.com'),
+    )
 
 MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '', # Or path to database file if using sqlite3.
-        'USER': '', # Not used with sqlite3.
-        'PASSWORD': '', # Not used with sqlite3.
-        'HOST': '', # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '', # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'fujin8', # Or path to database file if using sqlite3.
+        'USER': 'fujin8', # Not used with sqlite3.
+        'PASSWORD': 'fujin8', # Not used with sqlite3.
+        'HOST': '127.0.0.1', # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '3306', # Set to empty string for default. Not used with sqlite3.
     }
 }
 
@@ -27,11 +30,13 @@ DATABASES = {
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Chicago'
+#TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'Asia/Shanghai'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
+#LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh_CN'
 
 SITE_ID = 1
 
@@ -48,18 +53,20 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = ''
+#MEDIA_ROOT = ''
+MEDIA_ROOT = os.path.join(DIRNAME, 'media/')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = 'media'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = ''
+#STATIC_ROOT = ''
+STATIC_ROOT = os.path.join(os.path.dirname(__file__), 'static')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -67,10 +74,13 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-# Put strings here, like "/home/html/static" or "C:/www/django/static".
-# Always use forward slashes, even on Windows.
-# Don't forget to use absolute paths, not relative paths.
-)
+    # Put strings here, like "/home/html/static" or "C:/www/django/static".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+    ("img", os.path.join(STATIC_ROOT, 'img')),
+    ('js', os.path.join(STATIC_ROOT, 'js')),
+    ('css', os.path.join(STATIC_ROOT, 'css')),
+    )
 
 # List of finder classes that know how to find static files in
 # various locations.
@@ -105,7 +115,7 @@ ROOT_URLCONF = 'fujin8.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'fujin8.wsgi.application'
 
-TEMPLATE_DIRS = ('D:/pycharmrepos/fujin8/templates',)
+TEMPLATE_DIRS = os.path.join(DIRNAME, "templates")
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -118,8 +128,12 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'registration',
     'paimai',
     )
+
+ACCOUNT_ACTIVATION_DAYS = 3 # For mail registration 3 days activation window; you may, of course, use a different value.
+LOGIN_REDIRECT_URL = ""
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -129,23 +143,66 @@ INSTALLED_APPS = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+        },
     'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'django.utils.log.NullHandler',
+            },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
         'mail_admins': {
             'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        }
+            'class': 'django.utils.log.AdminEmailHandler',
+            #'filters': ['special']
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'formatter': 'simple',
+            'filename': os.path.join(DIRNAME, 'fujin8.log'),
+            'mode': 'a',
+            }
     },
     'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'propagate': True,
+            'level': 'INFO',
+            },
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
             },
-        }
+        'btfactory.views': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            }
+    }
 }
+
+DEFAULT_FROM_EMAIL = 'noreply@fujin8.com'
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_PASSWORD = "actorwall"
+EMAIL_HOST_USER = "aiqingdongzuopian@gmail.com"
+EMAIL_USE_TLS = True
+
+'''
+EMAIL_HOST = "host320.hostmonster.com"
+EMAIL_PORT = "26"
+EMAIL_HOST_PASSWORD = "noreplyaaa"
+EMAIL_HOST_USER = "noreply@beauty.fujin8.com"
+EMAIL_USE_TLS = False
+'''
+
