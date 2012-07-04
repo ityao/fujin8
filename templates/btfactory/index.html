@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}爱情动作片{% endblock title %}
+{% block main_content %}
+    <div class="tabbable tabs">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#search_actress_panel" data-toggle="tab">搜索演员</a></li>
+            <li class=""><a href="#follow_actress_panel" data-toggle="tab">我的关注</a></li>
+            <li class=""><a href="#hot_movies" data-toggle="tab">火热新片</a></li>
+            <li class=""><a href="#hot_comments" data-toggle="tab">最新点评</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="search_actress_panel">
+                <form class="form-inline" onsubmit="return submit_search_actress()">
+                    <input id="search_acrtress_key" type="text" class="input" maxlength="20" placeholder="输入演员姓名关键字...">
+                    &nbsp;
+                    <button type="submit" class="btn"><i class="icon-search"></i> 搜索演员</button>
+                    <button type="button" class="btn btn-danger" onclick="search_actress()"><i
+                            class="icon-fire icon-white"></i> 最新收录
+                    </button>
+                </form>
+                <div id="search_actress_panel_content"></div>
+                <div id="search_actress_panel_pagination" class="pagination pagination-centered">
+                    <ul></ul>
+                </div>
+            </div>
+            <div class="tab-pane" id="follow_actress_panel">
+                <p>Howdy, I'm in Section B.</p>
+            </div>
+            <div class="tab-pane" id="hot_movies">
+                <p>What up girl, this is Section C.</p>
+            </div>
+            <div class="tab-pane" id="hot_comments">
+                <p>heihei</p>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block footer_js %}
+    <script src="/static/js/bootstrap-tab.js"></script>
+    <script src="/static/js/jquery.lazyload.min.js"></script>
+    <script>
+        $('div.tabbable a[data-toggle="tab"]').on('shown', function (e) {
+            //alert($(e.target).text());
+            //e.target // activated tab
+            //e.relatedTarget // previous tab
+        })
+        /*************    搜索演员  start    ***********************************/
+        function submit_search_actress() {
+            search_word = $("#search_acrtress_key").val();
+            if (search_word.length > 0) {
+                search_actress(search_word);
+            }
+            //cause not to submit
+            return false;
+        }
+
+        //所有返回的结果
+        var last_search_result = null;
+        //总页数
+        var pageAmount = 0;
+        //每页显示的演员数量
+        var actressInPage = 10;
+        //当前页码
+        var currentPageIndex = 1;
+        //搜索关键字
+        var query_data = null;
+
+
+        function showCurrentDisplayActress(targetPageIndex) {
+            if (targetPageIndex == -1) {
+                currentPageIndex = 1;
+                //初始化界面
+                pageAmount = Math.ceil(last_search_result.length / actressInPage);
+                pageContent = "";
+                for (var i = 1; i <= pageAmount; i++) {
+                    pageContent += '<li><a href="#" onclick="showCurrentDisplayActress(' + i + ')">' + i + '</a></li>';
+                }
+                $("#search_actress_panel_pagination ul").html(pageContent);
+            } else if (targetPageIndex > 0 && targetPageIndex <= pageAmount && targetPageIndex != currentPageIndex) {
+                var activeBtnSelector1 = "#search_actress_panel_pagination ul li:nth-child(" + currentPageIndex + ")";
+                $(activeBtnSelector1).removeClass('active');
+                currentPageIndex = targetPageIndex;
+            } else {
+                //条件错误，不予处理
+                return;
+            }
+            //返回显示结果
+            var startIndex = (currentPageIndex - 1) * actressInPage;
+            var endIndex = currentPageIndex * actressInPage;
+            if (endIndex > last_search_result.length) {
+                endIndex = last_search_result.length;
+            }
+            var activeBtnSelector = "#search_actress_panel_pagination ul li:nth-child(" + currentPageIndex + ")";
+            $(activeBtnSelector).addClass('active');
+
+            var actress_list = last_search_result.slice(startIndex, endIndex);
+            //render the result
+            $('#search_actress_panel_content').children('ul').empty();
+            $.each(actress_list, function (index, actress_json) {
+                actress_html = ich.actress_box_tpl({'name':actress_json['fields']['name'], 'co_names':actress_json['fields']['co_names'], 'header':'/media/' + actress_json['fields']['photo']});
+                $('#search_actress_panel_content').children('ul').append(actress_html);
+            });
+            if (query_data == null) {
+                $('#search_actress_panel_content').children('p').text("最新收录女演员：");
+            } else {
+                $('#search_actress_panel_content').children('p').text("含有 '" + query_data + "' 关键字的女演员：");
+            }
+            showAllPictures();
+        }
+
+        function search_actress(actress) {
+
+            if (actress) {
+                query_data = actress;
+            } else {
+                query_data = null;
+            }
+
+            $.post('/lovecast/actress_search/', {'actress':actress}, function (data) {
+                $('#search_actress_panel_content').empty().html('<p></p><ul class="media-grid"></ul>');
+                last_search_result = jQuery.parseJSON(data);
+                showCurrentDisplayActress(-1);
+            });
+        }
+        //第一次显示初始化最新演员信息
+        search_actress();
+        /*************    搜索演员  end    ***********************************/
+
+            //第一次显示初始化导航，使本页成为激活状态
+        $('#nav_lovecast').addClass('active');
+        //强迫加载图片
+        function showAllPictures() {
+            $("img.lazy").lazyload({ threshold:400 });
+        }
+
+    </script>
+
+    {% load icanhaz %}
+    {% icanhaz "actress_box_tpl" %}
+
+{% endblock %}

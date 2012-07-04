@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block main_content %}
+    <div>
+        {% if parsed_daily_list %}
+            <div id="parsed_daily_list">
+                <ul>
+                    {% for dailylink in parsed_daily_list %}
+                        <li><a href="/polls/{{ dailylink.id }}/">{{ dailylink.link }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        {% if actress_list %}
+            <div id="actress_detail">
+                <ul>
+                    {% for actress in actress_list %}
+                        <li><img alt="{{actress.name}}" title="{{actress.name}}" src="{{ actress.photo }}"
+                                 height="50"/>{{ actress.name }} | {{ actress.co_names }} | {{ actress.profile }} </li>
+                        <hr>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        {% if actress %}
+            <div id="actress_detail">
+                name: {{ actress.name }}<br/>
+                co_names: {{ actress.co_names }}<br/>
+                photo: <img alt="{{actress.name}}" title="{{actress.name}}" src="{{actress.photo}}"><br/>
+                profile: {{ actress.profile }}<br/>
+                <hr>
+                {{ actress.admin_thumbnail }}
+                <hr>
+                {{ actress.photo }}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

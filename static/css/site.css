@@ -1,0 +1,59 @@
+/*相册相框*/
+.media-grid {
+    margin-left: -20px;
+    margin-bottom: 0;
+    zoom: 1;
+}
+
+.media-grid:before, .media-grid:after {
+    display: table;
+    content: "";
+    zoom: 1;
+}
+
+.media-grid:after {
+    clear: both;
+}
+
+.media-grid li {
+    display: inline;
+}
+
+.media-grid li a {
+    float: left;
+    padding: 4px;
+    margin: 0 0 18px 20px;
+    border: 1px solid #ddd;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+
+    position: relative;
+    height: 300px;
+    width: 200px;
+    text-decoration: none
+}
+
+.media-grid li a img {
+    height: 300px;
+    width: 200px;
+    display: block;
+}
+
+.media-grid li a div {
+    width: 180px;
+    bottom: 0px;
+    position: absolute;
+    padding: 10px;
+    background: rgba(100%, 100%, 100%, 0.9);
+}
+
+.media-grid li a:hover {
+    border-color: #ff99BB;
+    -webkit-box-shadow: 0 1px 4px rgba(256, 0, 63, 0.25);
+    -moz-box-shadow: 0 1px 4px rgba(256, 0, 63, 0.25);
+    box-shadow: 0 1px 4px rgba(256, 0, 63, 0.25);
+}

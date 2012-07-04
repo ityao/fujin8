@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}每日片子审核{% endblock %}
+{% block content %}
+
+    {% if parsed_daily_list %}
+        {% for dailyinfo in parsed_daily_list %}
+            <div class="breadcrumb">
+                <!--<div class="offset1">-->
+                <a href="{{dailyinfo.daily.link}}">{{ dailyinfo.daily.label }}</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="label success"><a href="/btfactory/{{dailyinfo.daily.id}}/daily/">{{ dailyinfo.confirmed }}
+                    / {{ dailyinfo.loaded }} / {{ dailyinfo.count }}</a></span>
+                <!--</div>-->
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="row">
+            <div class="offset-one-third">No daily links are available.</div>
+        </div>
+    {% endif %}
+
+{% endblock %}

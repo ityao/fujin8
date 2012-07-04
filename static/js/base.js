@@ -36,3 +36,5 @@ jQuery(document).ajaxSend(function (event, xhr, settings) {
         xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
     }
 });
+
+

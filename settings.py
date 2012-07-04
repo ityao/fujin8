@@ -59,7 +59,7 @@ MEDIA_ROOT = os.path.join(DIRNAME, 'media/')
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = 'media'
+MEDIA_URL = '/media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -80,6 +80,7 @@ STATICFILES_DIRS = (
     ("img", os.path.join(STATIC_ROOT, 'img')),
     ('js', os.path.join(STATIC_ROOT, 'js')),
     ('css', os.path.join(STATIC_ROOT, 'css')),
+    ('ich', os.path.join(STATIC_ROOT, 'ich')),
     )
 
 # List of finder classes that know how to find static files in
@@ -107,7 +108,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #'django.middleware.clickjacking.XFrameOptionsMiddleware',
     )
 
 ROOT_URLCONF = 'fujin8.urls'
@@ -116,6 +117,8 @@ ROOT_URLCONF = 'fujin8.urls'
 WSGI_APPLICATION = 'fujin8.wsgi.application'
 
 TEMPLATE_DIRS = os.path.join(DIRNAME, "templates")
+TEMPLATE_STRING_IF_INVALID = "{{%s}}"
+ICANHAZ_DIR = os.path.join(TEMPLATE_DIRS, "icanhaz")
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -130,6 +133,9 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'registration',
     'paimai',
+    'btfactory',
+    'tagging',
+    'icanhaz',
     )
 
 ACCOUNT_ACTIVATION_DAYS = 3 # For mail registration 3 days activation window; you may, of course, use a different value.

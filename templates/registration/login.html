@@ -26,17 +26,15 @@
     </form>
 </div>
 <div class="modal-footer">
+    <a onclick="forget_password()" class="btn" style="position:absolute;left:20px">忘记密码</a>
     <a href="#" class="btn" data-dismiss="modal">关闭</a>
-    <a onclick="javascript:login()" class="btn btn-primary">登录</a>
+    <a onclick="login()" class="btn btn-primary">登录</a>
 </div>
 
 <script type="text/javascript">
     function login() {
-        //var csrf = $("#login_form input[name='csrfmiddlewaretoken']").val();
         var username = $("#login_form input[name='username']").val();
         var password = $("#login_form input[name='password']").val();
-        //console.log("csrf: "+csrf+" user: "+username+" pwd: "+ password);
-
         $.ajax({
             //data:{csrfmiddlewaretoken:csrf, username:username, password:password},
             data:{username:username, password:password},
@@ -56,6 +54,24 @@
             },
             type:'POST',
             url:'/accounts/login/'
+        })
+
+    }
+
+    function forget_password() {
+        $.ajax({
+            data:{},
+            dataTypes:'html',
+            success:function (data, textStatus, XMLHttpRequest) {
+                try {
+                    $("#login_modal").empty().html(data);
+                } catch (e) {
+                    $("#login_modal div.modal-body").empty().html(data);
+                }
+
+            },
+            type:'GET',
+            url:'/accounts/password/reset/'
         })
 
     }
