@@ -422,7 +422,7 @@ def search_actress(request):
             actresses = Actress.objects.filter(co_names__icontains=actress)[:100]
             result = serializers.serialize('json', actresses, fields=('name', 'co_names', 'photo', 'id'))
             return HttpResponse(result)
-        #缺省显示最新的10条
+            #缺省显示最新的10条
     actresses = Actress.objects.order_by('-id')[:100]
     result = serializers.serialize('json', actresses, fields=('name', 'co_names', 'photo', 'id'))
     return HttpResponse(result)
